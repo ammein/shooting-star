@@ -1,0 +1,31 @@
+{
+  "name": "shooting-star",
+  "version": "1.0.0",
+  "description": "ApostropheCMS Star Rating Field",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ammein/shooting-star.git"
+  },
+  "dependencies": {
+    "lodash" : "^4.17.11"
+  },
+  "keywords": [
+    "apostrophe",
+    "apostrophecms",
+    "apostrophe-cms",
+    "schema"
+  ],
+  "author": "Amin Shazrin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ammein/shooting-star/issues"
+  },
+  "homepage": "https://github.com/ammein/shooting-star#readme"
+}

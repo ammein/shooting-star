@@ -1,0 +1,13 @@
+{# In lib/modules/color-picker/views/field.html #}
+{%- import "apostrophe-schemas:macros.html" as schemas -%}
+
+{# A macro for our color picker control's content #}
+{% macro rating(field) %}
+    {# Put your nunjucks here #}
+    <fieldset class="rating" data-rating>
+        {# field is actually `data` #}
+    </fieldset>
+{% endmacro %}
+
+{# Wrap our content in a standard fieldset #}
+{{ schemas.fieldset(data, rating) }}
