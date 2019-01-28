@@ -91,9 +91,6 @@ apos.define('shooting-star',{
                 }
             }else{
                 var star = self.star;
-                self[name] = {
-                    star: field.star
-                }
             }
 
             // Create stars
@@ -186,7 +183,12 @@ apos.define('shooting-star',{
                 var totalRadio = allRadio.length;
                 for (var i = 0; i <= total; i += 0.5)(function (i) {
                     if (object[name].value === i) {
-                        $(allRadio.get(totalRadio)).attr("checked", "");
+                        // jQuery made a fallback for Edge Browser. Therefore , use old school `.checked` on it
+                        if (!(/*@cc_on!@*/ false || !!document.documentMode) && !!window.StyleMedia) {
+                            $(allRadio.get(totalRadio)).checked = true;
+                        }else{
+                            $(allRadio.get(totalRadio)).attr("checked", "");
+                        }
                     }
                     totalRadio--;
                 })(i);

@@ -16,7 +16,7 @@ Include in app.js:
 ```
 
 
-# Enable Code Editor Schema
+# Enable Shooting Star Schema
 Simple :
 ```javascript
 addFields : [
@@ -257,3 +257,8 @@ apos.shootingStar.secondStar.star
 ```
 
 > Easy right ? Hell yeah it is ! :laughing:
+
+# Changelog
+### 1.0.1 
+- Fixed when on browser Edge cannot automatically checked the input by using jQuery. Therefore, use oldschool technique where `.checked` attribute is use to set a boolean value on it. 
+-README Changed
