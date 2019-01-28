@@ -185,7 +185,7 @@ apos.define('shooting-star',{
                     if (object[name].value === i) {
                         // jQuery made a fallback for Edge Browser. Therefore , use old school `.checked` on it
                         if (!(/*@cc_on!@*/ false || !!document.documentMode) && !!window.StyleMedia) {
-                            $(allRadio.get(totalRadio)).checked = true;
+                            $(allRadio.get(totalRadio)).get(0).checked = true;
                         }else{
                             $(allRadio.get(totalRadio)).attr("checked", "");
                         }
