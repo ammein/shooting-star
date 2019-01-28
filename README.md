@@ -71,6 +71,7 @@ module.exports = {
 Easy , make sure the name of the rate is similar to default rate. Here is the default rate & tooltip(Mouse Hover Tooltip) :
 
 ```javascript
+// In lib/modules/shooting-star/index.js
 module.exports = {
     star : {
         tooltip : [
@@ -119,6 +120,25 @@ addFields : [
 ```
 
 > Your `secondStar` will produce 10 stars and 50px size of that star instead of 5 stars and 30px size. Awesome right ? No need to scratch your head :laughing:
+
+You only can customized on specific field with these options only :
+```javascript
+    {
+        type : 'shooting-star',
+        name : 'secondStar',
+        label : "Rate your second customized star",
+        star : {
+            size : "<Number or String>", // Star Size - Default : 30px
+            color : "<String>", // Star Base Color - Default : #ddd
+            highlightColor : "<String>", // Star Color when Click - Default : #FFD700
+            hoverColor : "<String>" // Star Color when Hover - Default : #FFED85
+            total : "<Number>" // Total Number Of Stars - Default : 5
+        }
+    }
+```
+
+> **WARNING** : You cannot add `tooltip` here. Make your tooltip inside project level module which is `lib/modules/shooting-star/index.js`
+
 
 # How To Insert My Stylesheets/Scripts Files ?
 I provide a simple object for you. Behold !
