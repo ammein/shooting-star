@@ -204,7 +204,7 @@ apos.define('shooting-star',{
             var $fieldset = apos.schemas.findFieldset($el, name);
 
             var $rating = $fieldset.data("star");
-            // If schema in a single UI got two same fields
+
             object[name] = {
                 priority: $rating.find("input[name='rating-" + name.toLowerCase() + "']:checked").attr("data-rate"),
                 value: parseFloat($rating.find("input[name='rating-" + name.toLowerCase() + "']:checked").val())

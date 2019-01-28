@@ -37,8 +37,6 @@ This shooting-star schema returns an object.
 }
 ```
 
-> Priority is a string value either `low` , `medium` or `high`. You can use this value to group your elements later. Thank me later :wink:
-
 If you did an example above , in `widget.html` you can simply get an object like this :
 
 ```twig
@@ -51,6 +49,14 @@ or you can simply use `apos.log()` to see what's available on `shooting-star` ob
 ```twig
 {{ apos.log(data.widget.rating) }}
 ```
+
+### How `priority` works and what does it for ?
+For example , let say we have 5 stars in total. But we have 3 rates available which is `low` , `medium` and `high`. Each star will be divided on each rates available so that you can use your nunjucks grouping each element OR you can put some inline style css on each rate. For example 
+
+```twig
+<div style="{% if data.widget.rating.priority === 'medium' %}width : 66.67%;{% elif  data.widget.rating.priority === 'high' %}width : 100%;{% endif %}">
+```
+
 
 # Shooting Star Options Available
 
@@ -140,78 +146,6 @@ You only can customized on specific field with these options only :
 > **WARNING** : You cannot add `tooltip` here. Make your tooltip inside project level module which is `lib/modules/shooting-star/index.js`
 
 
-# How To Insert My Stylesheets/Scripts Files ?
-I provide a simple object for you. Behold !
-
-### Stylesheets inside `public/css/<all css files>`
-```javascript
-ace : {
-    // All ace options
-},
-stylesheets : {
-    files : [
-        {
-            name : 'parentFolder/style', // This will get style.css inside parentFolder
-            when : 'user'
-        }
-    ],
-    acceptFiles : ["css" , "sass" , "less" , "min.css"] // List of all accept files (Less , CSS and SASS are push by default)
-}
-```
-
-> Default `acceptFiles` : `css` , `sass` and `less`
-
-### Scripts inside `public/js/<all js files>`
-How about javascripts files ? Same as above example :
-
-```javascript
-ace : {
-    // All ace options
-},
-scripts : {
-    files : [
-        {
-            name : 'parentFolder/myScript', // This will get myScript.js inside parentFolder
-            when : 'user'
-        }
-    ],
-    acceptFiles : ["js" , "min.js"] // List of all accept files (js and min.js are push by default)
-}
-```
-
-> Default `acceptFiles` : `js` and `min.js`.
-
-### Error on pushing file assets
-If you receive an error while pushing files assets to browser , please make sure your directory is in correct path without extension name and accept any files extension name by your own modified extension names. For example
-
-```javascript
-ace : {
-    // All ace options
-},
-scripts : {
-    files : [
-        {
-            // If got subfolder inside parentFolder
-            // Include it too
-            name : 'parentFolder/subFolder/index', 
-            when : 'user'
-        },
-        {
-            // Or you can manually get custom.js inside parentFolder for specific js file
-            name : 'parentFolder/custom',
-            when : 'user'
-        },
-        {
-            name : 'index', // get index.js
-            when : 'user'
-        }
-    ]
-    acceptFiles : ["con.min.js"] // and other prefix extension file names available
-}
-```
-
-> NOTE : You don't have to include `'js/filedirectory'` or `'css/filedirectory'` in it. APOSTROPHECMS will push based on `self.pushAsset()` that you may found in [ApostropheCMS Push Asset Documentation](https://apostrophecms.org/docs/tutorials/getting-started/pushing-assets.html#configuring-stylesheets). Easy right ?
-
 # Browser
 
 ### Browser Object
@@ -259,6 +193,9 @@ apos.shootingStar.secondStar.star
 > Easy right ? Hell yeah it is ! :laughing:
 
 # Changelog
+### 1.0.4
+- README Changed and adjusted codes to minimize it.
+
 ### 1.0.3 
 - Fixed when on browser Edge cannot automatically checked the input by using jQuery. Therefore, use oldschool technique where `.checked` attribute is use to set a boolean value on it. 
 - README Changed

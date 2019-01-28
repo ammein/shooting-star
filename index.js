@@ -43,14 +43,6 @@ module.exports = {
 
         options.pathLib = __dirname + "/lib";
 
-        // stylesheets
-        options.stylesheets.files = [
-            {
-                name : "star",
-                when : 'user'
-            }
-        ].concat(options.stylesheets.files || []);
-
         options.scripts.files = [
             {
                 name : 'user',
