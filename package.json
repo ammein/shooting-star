@@ -1,6 +1,6 @@
 {
   "name": "shooting-star",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ApostropheCMS Star Rating Field",
   "main": "index.js",
   "directories": {
@@ -14,7 +14,7 @@
     "url": "https://github.com/ammein/shooting-star.git"
   },
   "dependencies": {
-    "lodash" : "^4.17.11"
+    "lodash": "^4.17.11"
   },
   "keywords": [
     "apostrophe",
