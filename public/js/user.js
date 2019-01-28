@@ -179,7 +179,7 @@ apos.define('shooting-star',{
             // Highlight star if exists
             if(object[name]){
                 var totalFieldset = $el.find("fieldset.rating").length;
-                var allRadio = $rating.find("input[name='rating-" + name.toLowerCase() + "']");
+                var allRadio = $($rating).find("input[name='rating-" + name.toLowerCase() + "']");
                 var totalRadio = allRadio.length;
                 for (var i = 0; i <= total; i += 0.5)(function (i) {
                     if (object[name].value === i) {
