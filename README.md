@@ -192,6 +192,16 @@ apos.shootingStar.secondStar.star
 
 > Easy right ? Hell yeah it is ! :laughing:
 
+### Get specific value on each schema
+You can get the object value or star values by simply get the field name
+```javascript
+// Get star object
+apos.shootingStar.firstStar.star
+
+// Get existing object
+apos.shootingStar.firstStar.object
+```
+
 # Changelog
 ### 1.0.4
 - README Changed and adjusted codes to minimize it.
