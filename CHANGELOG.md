@@ -1,4 +1,7 @@
 # Changelog
+### 2.0.0
+- Fixed for workflow problem that contains two type of fields. Live & Draft mode. Now you can see the UI changes beautifully when you change your mode.
+
 ### 1.0.4
 - README Changed and adjusted codes to minimize it.
 
