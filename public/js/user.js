@@ -148,28 +148,21 @@ apos.define('shooting-star', {
             if (select.length > 0) {
                 select.get(0).onchange = function (e) {
                     var status = $('option:selected', this).attr('value');
-                    var changeRadio = status === "draft" ? self.allRadio.apply(self, shiftArray(args, undefined)).length : -1;
+                    var changeRadio = -1;
                     var argsX = args.pop() && (args.push(status), args);
                     self.beforeSetRadio.apply(self, argsX);
-                    var mySelectValue = (status === "draft") ? object[name].value + self.star.total : object[name].value;
                     for (var i = 0; i <= total; i += 0.5)(function (i) {
-                        if (mySelectValue === i) {
+                        var inc = i > self[name].star.total ? i - self[name].star.total : i;
+                        if (object[name].value === inc) {
                             shiftArray(args, status === "draft" ? 1 : 0);
                             // Since the change event does synchronous. We can avoid using $el , instead use native document.querySelector
                             var arrays = Array.prototype.slice.call(document.querySelectorAll("fieldset.rating-" + name)).map((value, outIndex) => (outIndex === (status === "draft" ? 1 : 0)) ? Array.prototype.slice.call(value.querySelectorAll("input[name='rating-" + name.toLowerCase() + "']"), 0) : []).reduce((init, next) => init.concat(next), [])
-                            if (status === "draft") {
-                                arrays
-                                    .forEach((value, i) => (i === total - changeRadio) ? value.checked = true : null)
-                            } else {
-                                arrays.reverse()
-                                    .forEach((value, i) => (i === changeRadio) ? value.checked = true : null)
-                            }
+
+                            // Apply it
+                            arrays.reverse()
+                                .forEach((value, i) => (i === changeRadio) ? value.checked = true : null)
                         }
-                        if (status === "draft") {
-                            changeRadio--;
-                        } else {
-                            changeRadio++;
-                        }
+                        changeRadio++;
                     })(i);
                     self.afterSetRadio.apply(self, argsX);
                 }
@@ -177,7 +170,7 @@ apos.define('shooting-star', {
 
             // Set Radio initialize
             for (var i = 0; i <= total; i += 0.5) {
-                var inc = i > self.star.total ? i - self.star.total : i;
+                var inc = i > self[name].star.total ? i - self[name].star.total : i;
                 if (object[name].value === inc) {
                     $(self.allRadio.apply(self, args).get(totalRadio)).prop("checked", true);
                 }
@@ -193,6 +186,7 @@ apos.define('shooting-star', {
         self.populate = function (object, name, $field, $el, field, callback) {
             var $fieldSet = apos.schemas.findFieldset($el, name);
             var $rating = $fieldSet.find("[data-rating]");
+
             // Get Specific Data
             if (self.has(field, "star")) {
                 var star = field.star;
