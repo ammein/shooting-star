@@ -147,8 +147,8 @@ apos.define('shooting-star', {
             // select tag onchange event begins if available
             if (select.length > 0) {
                 select.get(0).onchange = function (e) {
-                    var changeRadio = self.allRadio.apply(self, shiftArray(args, undefined)).length;
                     var status = $('option:selected', this).attr('value');
+                    var changeRadio = status === "draft" ? self.allRadio.apply(self, shiftArray(args, undefined)).length : -1;
                     var argsX = args.pop() && (args.push(status), args);
                     self.beforeSetRadio.apply(self, argsX);
                     var mySelectValue = (status === "draft") ? object[name].value + self.star.total : object[name].value;
@@ -156,10 +156,20 @@ apos.define('shooting-star', {
                         if (mySelectValue === i) {
                             shiftArray(args, status === "draft" ? 1 : 0);
                             // Since the change event does synchronous. We can avoid using $el , instead use native document.querySelector
-                            document.querySelectorAll("fieldset.rating-" + name).forEach((value, outIndex) =>
-                                (outIndex === (status === "draft" ? 1 : 0)) ? value.querySelectorAll("input[name='rating-" + name.toLowerCase() + "']").forEach((value, i) => (i === changeRadio) ? value.checked = true : null) : null)
+                            var arrays = Array.prototype.slice.call(document.querySelectorAll("fieldset.rating-" + name)).map((value, outIndex) => (outIndex === (status === "draft" ? 1 : 0)) ? Array.prototype.slice.call(value.querySelectorAll("input[name='rating-" + name.toLowerCase() + "']"), 0) : []).reduce((init, next) => init.concat(next), [])
+                            if (status === "draft") {
+                                arrays
+                                    .forEach((value, i) => (i === total - changeRadio) ? value.checked = true : null)
+                            } else {
+                                arrays.reverse()
+                                    .forEach((value, i) => (i === changeRadio) ? value.checked = true : null)
+                            }
                         }
-                        changeRadio--;
+                        if (status === "draft") {
+                            changeRadio--;
+                        } else {
+                            changeRadio++;
+                        }
                     })(i);
                     self.afterSetRadio.apply(self, argsX);
                 }
@@ -186,11 +196,14 @@ apos.define('shooting-star', {
             // Get Specific Data
             if (self.has(field, "star")) {
                 var star = field.star;
-                self[name] = {
-                    star: field.star
-                }
             } else {
                 var star = self.star;
+            }
+
+            // Pass value to self based on field name
+            self[name] = {
+                star: field.star || self.star,
+                object: object[name]
             }
 
             // Create stars
@@ -255,7 +268,7 @@ apos.define('shooting-star', {
 
             // If this field got two in same modal , run click event
             if ($el.find("fieldset.rating-" + name).length > 1) {
-                $($el.find("label." + name.toLowerCase())).click(function () {
+                $($rating.find("label." + name.toLowerCase())).click(function () {
                     // Immitate color click to override css
                     $(this).parent().find("label." + name.toLowerCase()).css({
                         "color": star.color.toString()
@@ -266,7 +279,7 @@ apos.define('shooting-star', {
                     $(this).nextAll().css({
                         "color": star.highlightColor.toString()
                     });
-                    $(this).prev("input[name='rating-" + name.toLowerCase() + "']").attr("checked", "");
+                    $(this).prev("input[name='rating-" + name.toLowerCase() + "']").prop("checked", true)
                     // Clean All Multiple Checked Attribute if click other radio button
                     $(this).nextAll().not($(this).prev("input[name='rating-" + name.toLowerCase() + "']")).removeAttr("checked");
                     // Clean All Multiple Checked Attribute if click other radio button
