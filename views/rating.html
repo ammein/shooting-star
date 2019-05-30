@@ -3,8 +3,7 @@
 
 {# A macro for our color picker control's content #}
 {% macro rating(field) %}
-    {# Put your nunjucks here #}
-    <fieldset class="rating" data-rating>
+    <fieldset class="rating-{{ field.name }}" data-rating>
         {# field is actually `data` #}
     </fieldset>
 {% endmacro %}

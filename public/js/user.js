@@ -1,8 +1,8 @@
-apos.define('shooting-star',{
-    afterConstruct : function(self){
+apos.define('shooting-star', {
+    afterConstruct: function (self) {
         self.addFieldRatingType();
     },
-    construct:function(self,options){
+    construct: function (self, options) {
 
         self.star = options.star;
 
@@ -27,7 +27,7 @@ apos.define('shooting-star',{
             return curObj;
         }
 
-        self.css = function(fieldName , starOptions , size){
+        self.css = function (fieldName, starOptions, size) {
             return `
                 fieldset[data-rating] {
                     border: none;
@@ -56,7 +56,8 @@ apos.define('shooting-star',{
                     position: relative;
                 }
 
-                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:checked ~ label, /* show gold star when clicked */
+                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:checked ~ label , 
+                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:disabled:checked ~ label, /* show gold star when clicked */
                 fieldset[data-rating]:not(:checked) > label.${fieldName.toLowerCase()}:hover, /* hover current star */
                 fieldset[data-rating]:not(:checked) > label:hover ~ label.${fieldName.toLowerCase()}
                 { 
@@ -64,32 +65,131 @@ apos.define('shooting-star',{
                     cursor: pointer;
                 } /* hover previous stars in list */
 
-                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:checked + label:hover, /* hover current star when changing rating */
-                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:checked ~ label:hover,
-                fieldset[data-rating] > label:hover ~ input[name='rating-${fieldName.toLowerCase()}']:checked ~ label, /* lighten current selection */
-                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:checked ~ label:hover ~ label
+                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:checked + label:hover , 
+                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:disabled:checked + label:hover, /* hover current star when changing rating */
+                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:checked ~ label:hover , 
+                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:disabled:checked ~ label:hover,
+                fieldset[data-rating] > label:hover ~ input[name='rating-${fieldName.toLowerCase()}']:checked ~ label,
+                fieldset[data-rating] > label:hover ~ input[name='rating-${fieldName.toLowerCase()}']:disabled:checked ~ label /* lighten current selection */
+                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:checked , 
+                fieldset[data-rating] > input[name='rating-${fieldName.toLowerCase()}']:disabled:checked , 
+                input[name='rating-${fieldName.toLowerCase()}']:checked ~ label:hover ~ label
+                input[name='rating-${fieldName.toLowerCase()}']:disabled:checked ~ label:hover ~ label
                 { 
                     color: ${(starOptions.hoverColor) ? starOptions.hoverColor : "#FFED85"};  
                     cursor : pointer;
                 } 
                 fieldset[data-rating] > label.${fieldName.toLowerCase()}:before {
-                    font-size: ${(size) ? size : "30px"};
+                    font-size: ${(size) ? (typeof size === "number") ? size + "px" : size : "30px"};
                 }
                 `;
         }
 
+        self.radioCache = function (allRadio) {
+            if (allRadio) {
+                if (self.cache) {
+                    Array.prototype.slice.call(allRadio, 0).forEach(function (value, index) {
+                        if (self.cache[index] === value) return;
+                        self.cache.push(value);
+                    });
+                }
+                self.cache = [];
+                Array.prototype.slice.call(allRadio, 0).forEach(function (value, i) {
+                    self.cache.push(value);
+                });
+            }
+            return self.cache;
+        }
+
+        // Before Set Radio event method
+        self.beforeSetRadio = function (getFieldset, object, name, $field, $el, field, status) {
+            Array.prototype.slice.call(self.allRadio.apply(self, shiftArray(Array.prototype.slice.call(arguments), undefined))).forEach(function (value, i) {
+                value.checked = false;
+            })
+            return;
+        }
+
+        // After Set Radio event method
+        self.afterSetRadio = function (getFieldset, object, name, $field, $el, field, status) {
+            // Make opacity half set on live draft
+            if (status === "draft") {
+                $($el.find("fieldset.rating-" + name).get(getFieldset)).css("opacity", 0.5);
+            }
+            return;
+        }
+
+        // Return all radio in array from fieldset
+        self.allRadio = function (getFieldset, object, name, $field, $el, field, callback) {
+            return $($el.find('fieldset.rating-' + name).get(typeof getFieldset === "number" ? getFieldset : null)).find("input[name='rating-" + name.toLowerCase() + "']");
+        }
+
+        // Shift Array and Unshift Array method
+        var shiftArray = function (arr, item) {
+            arr.shift();
+            arr.unshift(item);
+            return arr;
+        }
+
+        // Set Radio Method begins with parameter of select.
+        // Select parameter will be only available if workflow enabled in apostrophe.
+        self.setRadio = function (total, object, name, select) {
+            // Renormalize arguments on the last argument to an array
+            var args = Array.prototype.slice.call(arguments, arguments.length - 1).reduce((init, next) => init.concat(next), [undefined])
+
+            // Apply to cache , useful if you wish to remove children in DOM and reset them back by using this cache
+            self.radioCache(self.allRadio.apply(self, args));
+
+            // Apply event on before setting radio. Useful for styling
+            self.beforeSetRadio.apply(self, args);
+
+            var totalRadio = self.allRadio.apply(self, args).length;
+
+            // select tag onchange event begins if available
+            if (select.length > 0) {
+                select.get(0).onchange = function (e) {
+                    var changeRadio = self.allRadio.apply(self, shiftArray(args, undefined)).length;
+                    var status = $('option:selected', this).attr('value');
+                    var argsX = args.pop() && (args.push(status), args);
+                    self.beforeSetRadio.apply(self, argsX);
+                    var mySelectValue = (status === "draft") ? object[name].value + self.star.total : object[name].value;
+                    for (var i = 0; i <= total; i += 0.5)(function (i) {
+                        if (mySelectValue === i) {
+                            shiftArray(args, status === "draft" ? 1 : 0);
+                            // Since the change event does synchronous. We can avoid using $el , instead use native document.querySelector
+                            document.querySelectorAll("fieldset.rating-" + name).forEach((value, outIndex) =>
+                                (outIndex === (status === "draft" ? 1 : 0)) ? value.querySelectorAll("input[name='rating-" + name.toLowerCase() + "']").forEach((value, i) => (i === changeRadio) ? value.checked = true : null) : null)
+                        }
+                        changeRadio--;
+                    })(i);
+                    self.afterSetRadio.apply(self, argsX);
+                }
+            }
+
+            // Set Radio initialize
+            for (var i = 0; i <= total; i += 0.5) {
+                var inc = i > self.star.total ? i - self.star.total : i;
+                if (object[name].value === inc) {
+                    $(self.allRadio.apply(self, args).get(totalRadio)).prop("checked", true);
+                }
+                totalRadio--;
+            };
+
+            // Apply event on after setting radio. Useful for styling
+            self.afterSetRadio.apply(self, args);
+            return;
+        }
+
         // Begin display rating widget with options
         self.populate = function (object, name, $field, $el, field, callback) {
-            var $fieldSet = apos.schemas.findFieldset($el , name);
+            var $fieldSet = apos.schemas.findFieldset($el, name);
             var $rating = $fieldSet.find("[data-rating]");
-
             // Get Specific Data
-            if(self.has(field , "star")){
+            if (self.has(field, "star")) {
                 var star = field.star;
                 self[name] = {
                     star: field.star
                 }
-            }else{
+            } else {
                 var star = self.star;
             }
 
@@ -107,9 +207,9 @@ apos.define('shooting-star',{
 
                 // Make attributes & tied them
                 radio.get(0).id = "star" + i;
-                $(label.get(0)).attr("for" , "star" + i)
-                 $(radio.get(0)).attr("name", "rating-" + name.toLowerCase());
-                 $(label.get(0)).addClass(name.toLowerCase());
+                $(label.get(0)).attr("for", "star" + i)
+                $(radio.get(0)).attr("name", "rating-" + name.toLowerCase());
+                $(label.get(0)).addClass(name.toLowerCase());
 
 
                 // Make radio button a value to get the value from
@@ -126,34 +226,35 @@ apos.define('shooting-star',{
                         $(label.get(0)).attr("title", (tooltip[id]) ? tooltip[id].value.replace("$", i) : tooltip[0].value.replace("$", i))
                         $(radio.get(0)).attr("data-rate", (tooltip[id]) ? tooltip[id].rate : tooltip[0].rate)
                         id--;
-                    }else{
+                    } else {
                         $(label.get(0)).attr("title", tooltip[id].value.replace("$", i))
                         $(radio.get(0)).attr("data-rate", tooltip[id].rate)
                     }
                 }
 
                 // Make class for `full` or half for hidden star behind the star ;)
-                if(full){
+                if (full) {
                     $(label.get(0)).addClass("full")
                     full = false;
-                }else{
+                } else {
                     $(label.get(0)).addClass("half")
                     full = true;
                 }
             })(i);
 
             // Find Total Fieldset to append stylesheets
-            var totalFieldset = $el.find("fieldset.rating").length;
+            var totalFieldset = $el.find("fieldset.rating-" + name).length;
 
             // Get Size
             var size = (self.has(field, "star.size") && field.name === name) ? field.star.size : self.star.size;
 
+            // Inject CSS
             for (var i = 0; i < totalFieldset; i++) {
-                $($fieldSet.find("fieldset.rating").get(i)).prepend("<style type='text/css'>" + self.css(name, star, size) + "</style>");
+                $($fieldSet.find("fieldset.rating-" + name).get(i)).prepend("<style type='text/css'>" + self.css(name, star, size) + "</style>");
             }
 
-            // Inject CSS for schema control more than 1 or just 1
-            if($el.find("fieldset.rating").length > 1){
+            // If this field got two in same modal , run click event
+            if ($el.find("fieldset.rating-" + name).length > 1) {
                 $($el.find("label." + name.toLowerCase())).click(function () {
                     // Immitate color click to override css
                     $(this).parent().find("label." + name.toLowerCase()).css({
@@ -165,11 +266,11 @@ apos.define('shooting-star',{
                     $(this).nextAll().css({
                         "color": star.highlightColor.toString()
                     });
-                    $(this).prev("input[name='rating-"+name.toLowerCase()+"']").attr("checked", "");
+                    $(this).prev("input[name='rating-" + name.toLowerCase() + "']").attr("checked", "");
                     // Clean All Multiple Checked Attribute if click other radio button
-                    $(this).nextAll().not($(this).prev("input[name='rating-"+name.toLowerCase()+"']")).removeAttr("checked");
+                    $(this).nextAll().not($(this).prev("input[name='rating-" + name.toLowerCase() + "']")).removeAttr("checked");
                     // Clean All Multiple Checked Attribute if click other radio button
-                    $(this).prevAll().not($(this).prev("input[name='rating-"+name.toLowerCase()+"']")).removeAttr("checked");
+                    $(this).prevAll().not($(this).prev("input[name='rating-" + name.toLowerCase() + "']")).removeAttr("checked");
 
                     // Prevent Bubbling to other radio button.
                     return false;
@@ -177,24 +278,25 @@ apos.define('shooting-star',{
             }
 
             // Highlight star if exists
-            if(object[name]){
-                var totalFieldset = $el.find("fieldset.rating").length;
-                var allRadio = $($rating).find("input[name='rating-" + name.toLowerCase() + "']");
-                var totalRadio = allRadio.length;
-                for (var i = 0; i <= total; i += 0.5)(function (i) {
-                    if (object[name].value === i) {
-                        // jQuery made a fallback for Edge Browser. Therefore , use old school `.checked` on it
-                        if (!(/*@cc_on!@*/ false || !!document.documentMode) && !!window.StyleMedia) {
-                            $(allRadio.get(totalRadio)).get(0).checked = true;
-                        }else{
-                            $(allRadio.get(totalRadio)).attr("checked", "");
-                        }
+            if (object[name]) {
+                var totalFieldset = $el.find("fieldset.rating-" + name).length;
+                total = totalFieldset > 1 ? total * totalFieldset : total;
+                // If EDGE browser detected , running setTimeout. Seems like Edge Browser has its own delay when 
+                // apostrophecms trigger reload to open manageModal view. - Amin
+                if (!( /*@cc_on!@*/ false || !!document.documentMode) && !!window.StyleMedia) {
+                    setTimeout(() => {
+                        for (var i = 0; i <= totalFieldset; i++)(function (i) {
+                            self.setRadio.call(self, total, object, name, $fieldSet.find('[data-apos-workflow-field-state-control]'), Array.prototype.slice.call(arguments))
+                        })(i)
+                    }, 1000);
+                } else {
+                    for (var i = 0; i <= totalFieldset; i++) {
+                        self.setRadio.call(self, total, object, name, $fieldSet.find('[data-apos-workflow-field-state-control]'), Array.prototype.slice.call(arguments))
                     }
-                    totalRadio--;
-                })(i);
+                }
             }
 
-            $fieldSet.data("star" , $rating);
+            $fieldSet.data("star", $rating);
 
             return setImmediate(callback);
         }
