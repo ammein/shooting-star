@@ -6,7 +6,11 @@ apos.define('shooting-star', {
 
         self.star = options.star;
 
-        self.name = self.__meta.name;;
+        self.name = self.__meta.name;
+
+        self.selectValue = null;
+
+        self.selectRate = null;
 
         self.addFieldRatingType = function () {
             apos.schemas.addFieldType({
@@ -274,6 +278,11 @@ apos.define('shooting-star', {
                         "color": star.highlightColor.toString()
                     });
                     $(this).prev("input[name='rating-" + name.toLowerCase() + "']").prop("checked", true)
+
+                    // Apply to selectValue. This to avoid live & draft mode switch bug that checking 'checked' attribute will always not working
+                    self.selectValue = parseFloat($(this).prev("input[name='rating-" + name.toLowerCase() + "']").attr("value"));
+                    // Apply to selectRate. This to avoid live & draft mode switch bug that checking 'checked' attribute will always not working
+                    self.selectRate = $(this).prev("input[name='rating-" + name.toLowerCase() + "']").attr("data-rate");
                     // Clean All Multiple Checked Attribute if click other radio button
                     $(this).nextAll().not($(this).prev("input[name='rating-" + name.toLowerCase() + "']")).removeAttr("checked");
                     // Clean All Multiple Checked Attribute if click other radio button
@@ -315,8 +324,8 @@ apos.define('shooting-star', {
             var $rating = $fieldset.data("star");
 
             object[name] = {
-                priority: $rating.find("input[name='rating-" + name.toLowerCase() + "']:checked").attr("data-rate"),
-                value: parseFloat($rating.find("input[name='rating-" + name.toLowerCase() + "']:checked").val())
+                priority: self.selectRate,
+                value: self.selectValue
             }
             if (field.required && (!object[name])) {
                 return setImmediate(_.partial(callback, 'required'));
