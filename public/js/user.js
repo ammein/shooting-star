@@ -319,14 +319,17 @@ apos.define('shooting-star', {
 
         // On Submit to Server convert , reject if unacceptable
         self.convert = function (object, name, $field, $el, field, callback) {
-            var $fieldset = apos.schemas.findFieldset($el, name);
 
-            var $rating = $fieldset.data("star");
-
+            // We are not going to fetch field value on which radio button is checked.
+            // This is due to confusing which field to get if this field is used in apostrophe-pieces that
+            // contains apostrophe-workflow in the project because live & draft mode is enable and user
+            // will switch the mode when they wanted to see the live value but they had clicked the new star on draft mode.
+            // So to get `checked` attribute would be tricky - Amin
             object[name] = {
                 priority: self.selectRate,
                 value: self.selectValue
             }
+
             if (field.required && (!object[name])) {
                 return setImmediate(_.partial(callback, 'required'));
             }
