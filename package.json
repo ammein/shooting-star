@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./tests/**/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,11 @@
   "bugs": {
     "url": "https://github.com/ammein/shooting-star/issues"
   },
-  "homepage": "https://github.com/ammein/shooting-star#readme"
+  "homepage": "https://github.com/ammein/shooting-star#readme",
+  "devDependencies": {
+    "apostrophe": "^2.96.1",
+    "expect": "^24.9.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.2"
+  }
 }
