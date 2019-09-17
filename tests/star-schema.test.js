@@ -137,6 +137,37 @@ describe("Shooting Star : Schema Compose & Convert", function() {
             assert(err);
             expect(output).toMatchObject({});
             done();
+        });
+    });
+
+    it('should submit the value with field required', function(done) {
+        var req = apos.tasks.getReq();
+
+        var schema = apos.schemas.compose({
+            addFields : [
+                {
+                    name : "myStar",
+                    label : "Rate Your Picture",
+                    type : "shooting-star"
+                }
+            ]
+        });
+
+        var output = {};
+
+        apos.schemas.convert(req, schema, 'form', {
+            myStar : {
+                priority : "high",
+                value : 5
+            }
+        }, output, function(err) {
+            assert(!err);
+            expect(output.myStar).toMatchObject({
+                priority : "high",
+                value : 5
+            });
+            expect(Object.keys(output.myStar).length).toBe(2);
+            done();
         })
     })
 })

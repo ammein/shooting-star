@@ -1,4 +1,8 @@
 # Changelog
+### 2.2.1
+- Add Unit Tests.
+- Adjust README with build tests link.
+
 ### 2.2.0
 - Fixed for click star issue on both mode whether they have apostrophe-workflow or not in the project. If they do not have, well . Use normal get `checked` attribute on radio button input.
 

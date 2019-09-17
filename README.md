@@ -1,4 +1,6 @@
 # Shooting-Star ApostropheCMS Schema :star2: :star2: :star2: :star: :star:
+[![Build Status](https://travis-ci.org/ammein/shooting-star.svg?branch=master)](https://travis-ci.org/ammein/shooting-star)
+
 An ApostropheCMS Custom Schema for your own shooting star (Rating) field. 
 
 ![Shooting Star Example](https://media.giphy.com/media/3osDlgXJgpDjwqX2uh/giphy.gif)
@@ -192,17 +194,11 @@ apos.shootingStar.secondStar.star
 
 > Easy right ? Hell yeah it is ! :laughing:
 
-### Get specific value on each schema
-You can get the object value or star values by simply get the field name
-```javascript
-// Get star object
-apos.shootingStar.firstStar.star
-
-// Get existing object
-apos.shootingStar.firstStar.object
-```
-
 # Changelog
+### 2.2.1
+- Add Unit Tests.
+- Adjust README with build tests link.
+
 ### 2.2.0
 - Fixed for click star issue on both mode whether they have apostrophe-workflow or not in the project. If they do not have, well . Use normal get `checked` attribute on radio button input.
 
