@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/ammein/shooting-star#readme",
   "devDependencies": {
-    "apostrophe": "^2.96.1",
+    "apostrophe": "^2.96.2",
     "expect": "^24.9.0",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.2"
